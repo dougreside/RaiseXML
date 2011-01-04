@@ -1,0 +1,74 @@
+<HTML>
+<HEAD>
+	<SCRIPT type="text/javascript" src="./jquery-1.3.2.min.js"></SCRIPT>
+		<SCRIPT type="text/javascript" src="./getPath.js"></SCRIPT>
+	<SCRIPT type="text/javascript" src="./rangy-core-src.js"></SCRIPT>
+	<SCRIPT type="text/javascript" src="./selectionsaverestore.js"></SCRIPT>
+	<SCRIPT type="text/javascript" src="./textSelection.js"></SCRIPT>
+	<SCRIPT type="text/javascript">
+		$(document).ready(function(){
+			var d = $("#coolness")[0].contentWindow.document; // contentWindow works in IE7 and FF
+  d.open(); d.close(); // must open and close document object to start using it!
+	$("body", d).html("<div id='iframeBody' style='width:450;height:450;border:thin solid blue'></div>");
+  // now start doing normal jQuery:
+  $("body", d).attr("contenteditable","true");
+  	$("body", d).click(function(e){
+                	alert("click");               
+     });	
+   	$("body", d).keypress(function(e){
+			$("#quack").html(e.charCode);
+                	switch (e.charCode) {				
+                        case 16:
+						shifted = true;
+						break;
+                        case 60:
+							// <
+							window.parent.showMessage("Tag Opened");	
+                        break;     
+						case 62:
+							// <
+							window.parent.showMessage("Tag Closed");	
+                        break;                        
+                    }
+					if (e.keyCode!=16){
+						shifted = false;
+					}
+                    
+                });	
+			ts = new TextSelector();
+			shifted=false;
+			$("#cool").mousedown(function(e){joy = ts.getSelectedText();alert(JSON.stringify(joy));});
+		
+    
+		});
+		function showMessage(data){
+		
+			$("#Messages").html(data);
+			
+		}
+	</SCRIPT>
+<title>TEI Editor</title>
+	</HEAD>
+	<BODY>
+		<div id="cool">cool</div>
+		<div id="quack"></div>
+		<table>
+		<tr>
+			<td>
+		<iframe src="./iframe.html" id="coolness" width=500 height=500>
+		</iframe>
+		</td>
+		<td>
+		<div id="Messages">
+			
+		</div>
+		<div id="tree">
+			
+		</div></td>
+		</tr>
+		</table>
+		
+		
+	</BODY>
+	
+	</HTML>
