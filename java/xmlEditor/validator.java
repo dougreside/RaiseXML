@@ -1,13 +1,10 @@
 package xmlEditor;
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 /**
  *
- * @author jdeerin1
+ * Class to validate xml documents against the tei-all schema, based on the IBM article found here:
+ * http://www.ibm.com/developerworks/xml/library/x-javaxmlvalidapi.html
  */
 import java.io.*;
 import javax.xml.XMLConstants;
@@ -22,27 +19,13 @@ public class validator{
 
         String fileName="The document";
         
-        // 1. Lookup a factory for the W3C XML Schema language
-        System.setProperty("javax.xml.validation.SchemaFactory:"+XMLConstants.RELAXNG_NS_URI,
-    "com.thaiopensource.relaxng.jaxp.CompactSyntaxSchemaFactory");
-
-        SchemaFactory factory =
-            SchemaFactory.newInstance(XMLConstants.RELAXNG_NS_URI);
-
-
-        // 2. Compile the schema.
-        // Here the schema is loaded from a java.io.File, but you could use
-        // a java.net.URL or a javax.xml.transform.Source instead.
-        File schemaLocation = new File("/usr/web/tei_all.rnc");
+        // 1. Lookup a factory for the RNG schema
+        System.setProperty("javax.xml.validation.SchemaFactory:"+XMLConstants.RELAXNG_NS_URI,"com.thaiopensource.relaxng.jaxp.CompactSyntaxSchemaFactory");
+        SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.RELAXNG_NS_URI);
+        File schemaLocation = new File("/usr/web/tei_all.rnc"); //use a schema stored on the server, could easily use a remote one but tei-all is ~275k
         Schema schema = factory.newSchema(schemaLocation);
-
-        // 3. Get a validator from the schema.
         Validator validator = schema.newValidator();
-
-        // 4. Parse the document you want to check.
         Source source = new StreamSource(new StringReader(text));
-
-        // 5. Check the document
         try {
             validator.validate(source);
             return(fileName + " is valid.");
