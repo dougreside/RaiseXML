@@ -1,104 +1,81 @@
 <HTML>
 <HEAD>
-	<SCRIPT type="text/javascript" src="./jquery-1.3.2.min.js"></SCRIPT>
+	<SCRIPT type="text/javascript" src="./jquery/js/jquery-1.4.4.min.js"></SCRIPT>
+	<SCRIPT type="text/javascript" src="./jquery/js/jquery-ui-1.8.7.custom.min.js"></SCRIPT>
+	
 		<SCRIPT type="text/javascript" src="./getPath.js"></SCRIPT>
 	<SCRIPT type="text/javascript" src="./rangy-core.js"></SCRIPT>
 	<SCRIPT type="text/javascript" src="./selectionsaverestore.js"></SCRIPT>
 	<SCRIPT type="text/javascript" src="./textSelection.js"></SCRIPT>
+	<SCRIPT type="text/javascript" src="./contextHelp.js"></SCRIPT>
+	<SCRIPT type="text/javascript" src="./underscore-min.js"></SCRIPT>
 	<style type="text/css">
 		.tag{
 			color: blue;
 		}
 	</style>
 	<SCRIPT type="text/javascript">
+		tagMode=false;
 		$(document).ready(function(){
+			
 				ts = new TextSelector();
    	$("body").keypress(function(e){
 			$("#quack").html(e.charCode);
-
-                	switch (e.charCode) {				
-                        case 16:
-						shifted = true;
-						break;
-                        case 60:
-							// <
+					if (!(tagMode)) {
+						switch (e.charCode) {
 						
-							
-							
-							document.execCommand("insertHTML",false,"<span class='tag'>&lt;</span>");
-							e.preventDefault();
-							/*
-							kidlen=$(sel.StartParent).children().length;
-							
-							
-							node = $(sel.EndParent)[0].childNodes[parseInt(sel.EndChild)];
-							if (node.nodeType == 3) {
-								output = node.nodeValue;
-							}
-							else{
-								output = $(node).text();
-							}
-							
-							
-							start = output.substring(0,sel.EndOffset);
-							end = output.substring(sel.EndOffset);
-							middle = $("<span class='tag' id='newAngle'>&lt;</span>")[0];
-							whole = start+middle+end;
-						
-							if (node.nodeType == 3) {
-								
-								output = node.parentNode.replaceChild(middle,node);
-								$(middle).before(start);
-								$(middle).after(end);
-							}
-							else{
-								$(node).html(whole);
-							}
-								var pos = rangy.createRange();
-								na = document.getElementById("newAngle");
-								na.id="";
-								pos.setStartAfter(na);
-								pos.insertNode($("<a>coolness</a>")[0]);
-								sel = ts.getSelectedText();
-								showMessage(JSON.stringify(sel));	
+							case 60:
+								// <					
+								possibleTags = contextHelp.text.elements;
+								contextHelp.text.elements
+								document.execCommand("insertHTML", false, "<span class='tag'>&lt;</span>");
+								tagMode = true;
 								e.preventDefault();
-						
-								*/
+								break;
+							case 62:
+								// <
+								mypos = rangy.getSelection();
+								newPos = rangy.createRange();
+								fon = mypos.focusNode.parentNode;
+								newText = $(fon).html() + "&gt;";
+								$(fon).html(newText);
+								newPos.selectNode(fon);
+								mypos = rangy.getSelection();
+								mypos.setSingleRange(newPos);
+								mypos.collapseToEnd();
+								e.preventDefault();
+								break;
+						}
+					}
+					else {
+						if (e.charCode == 62)
+						{
+								mypos = rangy.getSelection();
+								newPos = rangy.createRange();
+								fon = mypos.focusNode.parentNode;
+								newText = $(fon).html() + "&gt;";
+								$(fon).html(newText);
+								newPos.selectNode(fon);
+								mypos = rangy.getSelection();
+								mypos.setSingleRange(newPos);
+								mypos.collapseToEnd();
+								tagMode = false;
+								e.preventDefault();
+														
+						}
+						else if ((((e.charCode > 64) && (e.charCode < 90)) || ((e.charCode > 96) && (e.charCode < 122)))||(e.charCode==58)) {
 							
-							
-                        break;     
-						case 62:
-							// <
-					//		showMessage("Tag Closed");	
-							//document.execCommand("insertHTML",false,"&gt;");
-							
-							mypos = rangy.getSelection();
-							//selNode = $(pos.EndParent)[0];
-							newPos = rangy.createRange();
-							fon = mypos.focusNode.parentNode;
-							newText = $(fon).html()+"&gt;";
-							$(fon).html(newText);
-							
-							newPos.selectNode(fon);
-							mypos = rangy.getSelection();
-							
-							mypos.setSingleRange(newPos);
-							mypos.collapseToEnd();
+						}
+						else{
 							e.preventDefault();
-							
-						
-							//showMessage(JSON.stringify(mypos));
-					
-                        break;                        
-                    }
-					
+						}
+					}
                     
                 });	
 		
 			
 			$("#cool").mousedown(function(e){joy = ts.getSelectedText();alert(JSON.stringify(joy));});
 		
-    
 		});
 		function showMessage(data){
 		
