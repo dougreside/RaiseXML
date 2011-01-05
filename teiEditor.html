@@ -2,41 +2,100 @@
 <HEAD>
 	<SCRIPT type="text/javascript" src="./jquery-1.3.2.min.js"></SCRIPT>
 		<SCRIPT type="text/javascript" src="./getPath.js"></SCRIPT>
-	<SCRIPT type="text/javascript" src="./rangy-core-src.js"></SCRIPT>
+	<SCRIPT type="text/javascript" src="./rangy-core.js"></SCRIPT>
 	<SCRIPT type="text/javascript" src="./selectionsaverestore.js"></SCRIPT>
 	<SCRIPT type="text/javascript" src="./textSelection.js"></SCRIPT>
+	<style type="text/css">
+		.tag{
+			color: blue;
+		}
+	</style>
 	<SCRIPT type="text/javascript">
 		$(document).ready(function(){
-			var d = $("#coolness")[0].contentWindow.document; // contentWindow works in IE7 and FF
-  d.open(); d.close(); // must open and close document object to start using it!
-	$("body", d).html("<div id='iframeBody' style='width:450;height:450;border:thin solid blue'></div>");
-  // now start doing normal jQuery:
-  $("body", d).attr("contenteditable","true");
-  	$("body", d).click(function(e){
-                	alert("click");               
-     });	
-   	$("body", d).keypress(function(e){
+				ts = new TextSelector();
+   	$("body").keypress(function(e){
 			$("#quack").html(e.charCode);
+
                 	switch (e.charCode) {				
                         case 16:
 						shifted = true;
 						break;
                         case 60:
 							// <
-							window.parent.showMessage("Tag Opened");	
+						
+							
+							
+							document.execCommand("insertHTML",false,"<span class='tag'>&lt;</span>");
+							e.preventDefault();
+							/*
+							kidlen=$(sel.StartParent).children().length;
+							
+							
+							node = $(sel.EndParent)[0].childNodes[parseInt(sel.EndChild)];
+							if (node.nodeType == 3) {
+								output = node.nodeValue;
+							}
+							else{
+								output = $(node).text();
+							}
+							
+							
+							start = output.substring(0,sel.EndOffset);
+							end = output.substring(sel.EndOffset);
+							middle = $("<span class='tag' id='newAngle'>&lt;</span>")[0];
+							whole = start+middle+end;
+						
+							if (node.nodeType == 3) {
+								
+								output = node.parentNode.replaceChild(middle,node);
+								$(middle).before(start);
+								$(middle).after(end);
+							}
+							else{
+								$(node).html(whole);
+							}
+								var pos = rangy.createRange();
+								na = document.getElementById("newAngle");
+								na.id="";
+								pos.setStartAfter(na);
+								pos.insertNode($("<a>coolness</a>")[0]);
+								sel = ts.getSelectedText();
+								showMessage(JSON.stringify(sel));	
+								e.preventDefault();
+						
+								*/
+							
+							
                         break;     
 						case 62:
 							// <
-							window.parent.showMessage("Tag Closed");	
+					//		showMessage("Tag Closed");	
+							//document.execCommand("insertHTML",false,"&gt;");
+							
+							mypos = rangy.getSelection();
+							//selNode = $(pos.EndParent)[0];
+							newPos = rangy.createRange();
+							fon = mypos.focusNode.parentNode;
+							newText = $(fon).html()+"&gt;";
+							$(fon).html(newText);
+							
+							newPos.selectNode(fon);
+							mypos = rangy.getSelection();
+							
+							mypos.setSingleRange(newPos);
+							mypos.collapseToEnd();
+							e.preventDefault();
+							
+						
+							//showMessage(JSON.stringify(mypos));
+					
                         break;                        
                     }
-					if (e.keyCode!=16){
-						shifted = false;
-					}
+					
                     
                 });	
-			ts = new TextSelector();
-			shifted=false;
+		
+			
 			$("#cool").mousedown(function(e){joy = ts.getSelectedText();alert(JSON.stringify(joy));});
 		
     
@@ -55,8 +114,9 @@
 		<table>
 		<tr>
 			<td>
-		<iframe src="./iframe.html" id="coolness" width=500 height=500>
-		</iframe>
+		<div id="texted" contenteditable="true" width=500 height=500>
+			Test text
+		</div>
 		</td>
 		<td>
 		<div id="Messages">
