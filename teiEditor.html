@@ -1,45 +1,134 @@
 <HTML>
 <HEAD>
-	<SCRIPT type="text/javascript" src="./jquery-1.3.2.min.js"></SCRIPT>
+	<SCRIPT type="text/javascript" src="./jquery/js/jquery-1.4.4.min.js"></SCRIPT>
+	<SCRIPT type="text/javascript" src="./jquery/js/jquery-ui-1.8.7.custom.min.js"></SCRIPT>
+	
 		<SCRIPT type="text/javascript" src="./getPath.js"></SCRIPT>
-	<SCRIPT type="text/javascript" src="./rangy-core-src.js"></SCRIPT>
+	<SCRIPT type="text/javascript" src="./rangy-core.js"></SCRIPT>
 	<SCRIPT type="text/javascript" src="./selectionsaverestore.js"></SCRIPT>
 	<SCRIPT type="text/javascript" src="./textSelection.js"></SCRIPT>
+	<SCRIPT type="text/javascript" src="./contextHelp.js"></SCRIPT>
+	<SCRIPT type="text/javascript" src="./underscore-min.js"></SCRIPT>
+	<style type="text/css">
+		.tag{
+			color: blue;
+		}
+		.hidden{
+			display:block;
+		}
+		
+		#tree{
+			overflow: auto;
+			height: 100px;
+			width: 200px;
+			font-size: small;
+			border: thin solid red;
+		}
+	</style>
 	<SCRIPT type="text/javascript">
+		tagMode=false;
+		AutoSuggest = function(){
+			this.possible = [];
+			this.history=[];
+			this.typed = "";
+		};
+	AutoSuggest.constructor = AutoSuggest;
+	AutoSuggest.prototype = {};
+	$.extend(AutoSuggest.prototype, {
+		setPossible:function(possArray){
+			this.possible = possArray;
+			this.history = [];
+
+		},
+		narrowPossible:function(){
+			self = this;
+			this.history.push(this.possible);
+			this.possible = _.select(this.possible,function(i){if (i.substring(0,self.typed.length)==self.typed){return i;}}); 
+			return this.possible;
+		},
+		backPossible: function(){
+			this.possible = this.history.pop();
+		},
+		getPossible: function(){
+			return this.possible;
+		}
+		
+	});
+		
 		$(document).ready(function(){
-			var d = $("#coolness")[0].contentWindow.document; // contentWindow works in IE7 and FF
-  d.open(); d.close(); // must open and close document object to start using it!
-	$("body", d).html("<div id='iframeBody' style='width:450;height:450;border:thin solid blue'></div>");
-  // now start doing normal jQuery:
-  $("body", d).attr("contenteditable","true");
-  	$("body", d).click(function(e){
-                	alert("click");               
-     });	
-   	$("body", d).keypress(function(e){
-			$("#quack").html(e.charCode);
-                	switch (e.charCode) {				
-                        case 16:
-						shifted = true;
-						break;
-                        case 60:
-							// <
-							window.parent.showMessage("Tag Opened");	
-                        break;     
-						case 62:
-							// <
-							window.parent.showMessage("Tag Closed");	
-                        break;                        
-                    }
-					if (e.keyCode!=16){
-						shifted = false;
+			texteles = _.uniq(contextHelp.text.elements);
+			
+				ts = new TextSelector();
+   	$("body").keypress(function(e){
+			$("#quack").html(e.charCode+"/"+e.keyCode);
+					if (!(tagMode)) {
+						switch (e.charCode) {
+						
+							case 60:
+								// <					
+								
+								
+								document.execCommand("insertHTML", false, "<span class='tag'>&lt;</span>");
+								
+								tagMode = true;
+								asug = new AutoSuggest();
+								asug.setPossible(texteles);
+								e.preventDefault();
+								break;
+					
+						}
+					}
+					else {
+						if (e.charCode == 62)
+						{
+								mypos = rangy.getSelection();
+								newPos = rangy.createRange();
+								fon = mypos.focusNode.parentNode;
+								newText = $(fon).html() + "&gt;";
+								$(fon).html(newText);
+								newPos.selectNode(fon);
+								mypos = rangy.getSelection();
+								mypos.setSingleRange(newPos);
+								mypos.collapseToEnd();
+								tagMode = false;
+								e.preventDefault();
+														
+						}
+						
+						else{
+							if (e.keyCode == 8){
+								asug.typed = asug.typed.substring(0,asug.typed.length-1);
+								asug.backPossible();
+							}
+							else{
+								asug.typed = asug.typed+String.fromCharCode(e.charCode);
+							
+								
+							}
+							showMessage(asug.typed);
+							list = asug.narrowPossible();
+							listHTML = "<ul>";
+							for (var i=0;i<list.length;i++){
+								listHTML = listHTML+"<li>"+list[i]+"</li>"
+							}
+							listHTML=listHTML+"</ul>"
+							
+							$("#tree").html(listHTML);
+						
+							
+							
+							
+								
+							
+						}
+					
 					}
                     
                 });	
-			ts = new TextSelector();
-			shifted=false;
+		
+			
 			$("#cool").mousedown(function(e){joy = ts.getSelectedText();alert(JSON.stringify(joy));});
 		
-    
 		});
 		function showMessage(data){
 		
@@ -55,8 +144,9 @@
 		<table>
 		<tr>
 			<td>
-		<iframe src="./iframe.html" id="coolness" width=500 height=500>
-		</iframe>
+		<div id="texted" contenteditable="true" width=500 height=500>
+			Test text
+		</div>
 		</td>
 		<td>
 		<div id="Messages">
