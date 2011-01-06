@@ -13,38 +13,69 @@
 		.tag{
 			color: blue;
 		}
+		.hidden{
+			display:block;
+		}
+		
+		#tree{
+			overflow: auto;
+			height: 100px;
+			width: 200px;
+			font-size: small;
+			border: thin solid red;
+		}
 	</style>
 	<SCRIPT type="text/javascript">
 		tagMode=false;
+		AutoSuggest = function(){
+			this.possible = [];
+			this.history=[];
+			this.typed = "";
+		};
+	AutoSuggest.constructor = AutoSuggest;
+	AutoSuggest.prototype = {};
+	$.extend(AutoSuggest.prototype, {
+		setPossible:function(possArray){
+			this.possible = possArray;
+			this.history = [];
+
+		},
+		narrowPossible:function(){
+			self = this;
+			this.history.push(this.possible);
+			this.possible = _.select(this.possible,function(i){if (i.substring(0,self.typed.length)==self.typed){return i;}}); 
+			return this.possible;
+		},
+		backPossible: function(){
+			this.possible = this.history.pop();
+		},
+		getPossible: function(){
+			return this.possible;
+		}
+		
+	});
+		
 		$(document).ready(function(){
+			texteles = _.uniq(contextHelp.text.elements);
 			
 				ts = new TextSelector();
    	$("body").keypress(function(e){
-			$("#quack").html(e.charCode);
+			$("#quack").html(e.charCode+"/"+e.keyCode);
 					if (!(tagMode)) {
 						switch (e.charCode) {
 						
 							case 60:
 								// <					
-								possibleTags = contextHelp.text.elements;
-								contextHelp.text.elements
+								
+								
 								document.execCommand("insertHTML", false, "<span class='tag'>&lt;</span>");
+								
 								tagMode = true;
+								asug = new AutoSuggest();
+								asug.setPossible(texteles);
 								e.preventDefault();
 								break;
-							case 62:
-								// <
-								mypos = rangy.getSelection();
-								newPos = rangy.createRange();
-								fon = mypos.focusNode.parentNode;
-								newText = $(fon).html() + "&gt;";
-								$(fon).html(newText);
-								newPos.selectNode(fon);
-								mypos = rangy.getSelection();
-								mypos.setSingleRange(newPos);
-								mypos.collapseToEnd();
-								e.preventDefault();
-								break;
+					
 						}
 					}
 					else {
@@ -63,12 +94,34 @@
 								e.preventDefault();
 														
 						}
-						else if ((((e.charCode > 64) && (e.charCode < 90)) || ((e.charCode > 96) && (e.charCode < 122)))||(e.charCode==58)) {
+						
+						else{
+							if (e.keyCode == 8){
+								asug.typed = asug.typed.substring(0,asug.typed.length-1);
+								asug.backPossible();
+							}
+							else{
+								asug.typed = asug.typed+String.fromCharCode(e.charCode);
+							
+								
+							}
+							showMessage(asug.typed);
+							list = asug.narrowPossible();
+							listHTML = "<ul>";
+							for (var i=0;i<list.length;i++){
+								listHTML = listHTML+"<li>"+list[i]+"</li>"
+							}
+							listHTML=listHTML+"</ul>"
+							
+							$("#tree").html(listHTML);
+						
+							
+							
+							
+								
 							
 						}
-						else{
-							e.preventDefault();
-						}
+					
 					}
                     
                 });	
