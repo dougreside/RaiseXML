@@ -1,6 +1,13 @@
-var Parser = {
+/**
+ *  XMLCheck is a tool for quickly doing minimal parsing/well-formedness checking
+ *  on an XML document (it really just checks for proper tag nesting).  Parsing 
+ *  can run just to the current cursor position and then stop. When a parse
+ *  has been run, the object can report on the 
+ */
+var XMLCheck = {
   stack: [],
   position: 0,
+  insideTag: false,
   wf: true,
   current: '',
   posMark: '\u202F',
@@ -16,8 +23,12 @@ var Parser = {
       this.stack = [];
       this.position = 0;
       this.wf = true;
+      this.insideTag = false;
       var stream = this.tokenize(doc);
-      for (var i = 0; i < stream.length; i++) {
+      if (stream[0].length > 0) {
+          this.wf = false;
+      }
+      for (var i = 1; i < stream.length; i++) {
           var token = stream[i];
           this.position += 4;
           var len = token.length;
@@ -52,14 +63,20 @@ var Parser = {
               }
               this.current = this.stack[this.stack.length - 1];
           } else {
+              this.insideTag = true;
+              token = token.trim();
               if (token.length > 0) {
-                  token = token.trim();
-                  if (token.indexOf(' ') >= 0) {
-                      token = token.substring(0, token.indexOf(' '));
-                      this.current = token;
-                  } else if (token.length > 0) {
-                      this.current = token;
+                  if (token.charAt(0) == '?' || token.charAt(0) == '!' || token.charAt(0) == '/') {
+                      this.current = this.stack[this.stack.length - 1];
+                  } else {
+                      if (token.indexOf(' ') >= 0) {
+                        token = token.substring(0, token.indexOf(' '));
+                        this.current = token;
+                      } else if (token.length > 0) {
+                        this.current = token;
+                      }
                   }
+                  
               }
           }
           this.position += len;
@@ -82,8 +99,19 @@ var Parser = {
    *  Parse the contents of an element, given by the id parameter up to the first
    *  occurrence of the character given by the posMark member variable.
    */
-  parseElementContentsToLocation: function(id) {
-      var doc = jQuery(id).text();
-      return this.parseToLocation(doc, doc.indexOf(this.posMark));
+  parseElementContentsToCursor: function(id) {
+      var sel = rangy.getSelection(); 
+      if (sel.rangeCount) {
+          var node = document.createTextNode(this.posMark);
+          var range = sel.getRangeAt(0);
+          range.insertNode(node);
+          var doc = jQuery(id).text();
+          this.parseToLocation(doc, doc.indexOf(this.posMark));
+          range.selectNode(node);
+          range.deleteContents();
+      }
+  },
+  getCurrentElement: function() {
+      return this.current;
   }
 };
