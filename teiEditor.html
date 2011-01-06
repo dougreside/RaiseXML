@@ -76,6 +76,7 @@
                 ts = new TextSelector();
                 $("body").keypress(function(e){
 					if (asug.menuOpen){
+					
 						switch (e.keyCode) {
 							case 40:
 								asug.menuDown();
@@ -88,16 +89,33 @@
 							break;
 							case 13:
 					
+							
 								var txt = asug.getCurrent().substring(asug.typed.length);
-								document.execCommand("insertHTML", false, txt);
-        
-								$("#activeTag").text("<"+txt);
+								
+								//  asug.typed = asug.getCurrent();
+								mypos = rangy.getSelection();
+                            newPos = rangy.createRange();
+                            fon = mypos.focusNode.parentNode;
+							oldText = $(fon).html();
+					
+							newText = oldText.toString()+txt;
+						asug.hideSuggest();
+							  $(fon).html(newText);
+							newPos = rangy.createRange();
+							
+							 newPos.selectNodeContents(fon);
+                            mypos = rangy.getSelection();
+                            mypos.setSingleRange(newPos);
+                            mypos.collapseToEnd();
+						
+								//document.execCommand("insertHTML", false, txt);
+        	
 								e.preventDefault();
 							break;
 							
 						}
 					}
-                    $("#quack").html(e.charCode + "/" + e.keyCode);
+                   
                     if (!(tagMode)) {
                         switch (e.charCode) {
                         
@@ -119,19 +137,28 @@
                     }
                     else {
                         if (e.charCode == 62) {
+							alert("pong");
+							
                             mypos = rangy.getSelection();
                             newPos = rangy.createRange();
-                            fon = mypos.focusNode.parentNode;
+							fon = mypos.focusNode;
+							if (fon.nodeType == 3) {
+								fon = fon.parentNode;
+							}
+							alert(fon.innerHTML);
+							
                             newText = $(fon).html() + "&gt;";
                             $(fon).html(newText);
-                            newPos.selectNode(fon);
-                            mypos = rangy.getSelection();
+                           newPos.selectNode(fon);
+							
+                            /*
+							mypos = rangy.getSelection();
                             mypos.setSingleRange(newPos);
                             mypos.collapseToEnd();
                             tagMode = false;
                             $("#activeTag").attr("id", "");
                    
-                           asug.hideSuggest();
+                           asug.hideSuggest();*/
                             e.preventDefault();
                             
                         }
@@ -144,7 +171,7 @@
 									
 								}
 								else {
-									alert("ping");
+									
 									asug.typed = asug.typed + String.fromCharCode(e.charCode);
 									
 									
