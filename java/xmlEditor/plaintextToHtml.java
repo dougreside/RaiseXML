@@ -21,11 +21,7 @@ import org.owasp.esapi.ESAPI;
 public class plaintextToHtml extends HttpServlet {
    
     /** 
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+     *use ESAPI to convert plaintext to html entities int the provided JSON string  and return it as a JSON string
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
@@ -35,8 +31,8 @@ public class plaintextToHtml extends HttpServlet {
                        if(request.getParameter("text")==null)
                 response.sendError(response.SC_EXPECTATION_FAILED);
             Gson gson = new Gson();
-            //String toret=gson.fromJson(request.getParameter("text"),String.class);
-            String toret="<title>\n\"Tom & Jerry's Revenge\"--A Tragedy\n</title>";
+            String toret=gson.fromJson(request.getParameter("text"),String.class);
+            //String toret="<title>\n\"Tom & Jerry's Revenge\"--A Tragedy\n</title>";
             
             toret=ESAPI.encoder().encodeForHTML(toret);
             toret=toret.replace("&#xa;", "<br>");

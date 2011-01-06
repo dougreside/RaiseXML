@@ -18,6 +18,7 @@
         </SCRIPT>
         <SCRIPT type="text/javascript" src="./AutoSuggest.js">
         </SCRIPT>
+		<SCRIPT type="text/javascript" src="./fixMarkup.js"></SCRIPT>
         <style type="text/css">
             
             .tag {
@@ -53,12 +54,14 @@
             tagMode = false;
             suggestOpen = false;
             function textPasted(){
-                // The contents of div#texted have just changed
-                // due to a paste action. Auto format.
-                curContents = $("#texted").html();
-                // Here a miracle occurs that makes curContents 
-                // properly formatted. 
-                $("#texted").html(curContents);
+        		function textPasted(){
+			// The contents of div#texted have just changed
+			// due to a paste action. Auto format.
+			curContents = $("#texted").html();
+                        //fixMarkup should only modify areas that dont correctly wrap spans around tags and change < and > to html entities
+                        curContents=fixMarkup(curContents);
+			$("#texted").html(curContents);
+		
             }
             
             function showSuggest(list){
@@ -177,3 +180,6 @@
         </div>
     </BODY>
 </HTML>
+
+
+

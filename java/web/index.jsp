@@ -30,11 +30,21 @@
 <%
 String url="http://archimedespalimpsest.net/Supplemental/ArchimedesTranscriptions/MeasurmentOfTheCircle/MeasurementCircle-NW-p5.xml";
 Gson gson = new Gson();
-
-out.print(gson.toJson(textFetcher.readFileAsString("/usr/web/MeasurementCircle-NW-p5.xml")));
+String jsonText=gson.toJson(textFetcher.readFileAsString("/usr/web/MeasurementCircle-NW-p5.xml"));
+out.print(jsonText);
 %>
             </textarea><br>
             <input type="submit" value="test tei-all validation"/>
+        </form>
+            <form action="downloadXML" method="post">
+            <textarea cols="120" rows="30" name="text" id="text">
+<%
+
+
+out.print(jsonText);
+%>
+            </textarea><br>
+            <input type="submit" value="test xml download"/>
         </form>
         <!--<button onclick="rep();">Replace angle brackets</button>replace<input type="text" id="regex"> with <input type="text" id="with">-->
         <form action="htmlToPlaintext" method="post">
