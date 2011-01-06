@@ -3,9 +3,15 @@ var Parser = {
   position: 0,
   wf: true,
   current: '',
+  posMark: '\u25AE',
   tokenize: function(str) {
     return str.split('<');
   },
+  /**
+   *  The parse function does not do a true XML well-formedness check.
+   *  In fact, it only does an extremely dumb, though fast, check that
+   *  tags are properly nested. Takes a string containing the XML doc.
+   */
   parse: function(doc) {
       this.stack = [];
       this.position = 0;
@@ -48,8 +54,10 @@ var Parser = {
           } else {
               if (token.length > 0) {
                   token = token.trim();
-                  if (token.indexOf(/\w/) >= 0) {
-                      token = token.substring(0, token.indexOf(/\w/));
+                  if (token.indexOf(' ') >= 0) {
+                      token = token.substring(0, token.indexOf(' '));
+                      this.current = token;
+                  } else if (token.length > 0) {
                       this.current = token;
                   }
               }
@@ -61,8 +69,21 @@ var Parser = {
       } 
       return this.wf;
   },
-  parseTo: function(doc, location) {
+  // Parse up to the point in the doc string given by the location
+  parseToLocation: function(doc, location) {
       var state = this.parse(doc.substring(0, location));
       return this.current;
+  },
+  // Parse the contents of an element, given by the id parameter
+  parseElementContents: function(id) {
+      return this.parse(jQuery(id).text());
+  },
+  /* 
+   *  Parse the contents of an element, given by the id parameter up to the first
+   *  occurrence of the character given by the posMark member variable.
+   */
+  parseElementContentsToLocation: function(id) {
+      var doc = jQuery(id).text();
+      return this.parseToLocation(doc, doc.indexOf(this.posMark));
   }
 };
