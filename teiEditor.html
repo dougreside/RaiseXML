@@ -53,7 +53,7 @@
         <SCRIPT type="text/javascript">
             tagMode = false;
             suggestOpen = false;
-            function textPasted(){
+          
         		function textPasted(){
 			// The contents of div#texted have just changed
 			// due to a paste action. Auto format.
@@ -154,8 +154,9 @@
                 
                 
                 $("#cool").mousedown(function(e){
-                    joy = ts.getSelectedText();
-                    alert(JSON.stringify(joy));
+                  //  joy = ts.getSelectedText();
+                  //  alert(JSON.stringify(joy));
+				  textPasted();
                 });
                 
             });
