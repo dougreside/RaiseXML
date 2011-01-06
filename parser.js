@@ -3,7 +3,7 @@ var Parser = {
   position: 0,
   wf: true,
   current: '',
-  posMark: '\u25AE',
+  posMark: '\u202F',
   tokenize: function(str) {
     return str.split('<');
   },

@@ -16,8 +16,7 @@
         </SCRIPT>
         <SCRIPT type="text/javascript" src="./underscore-min.js">
         </SCRIPT>
-        <SCRIPT type="text/javascript" src="./AutoSuggest.js">
-        </SCRIPT>
+        <script src="parser.js" type="text/javascript" charset="utf-8"></script>
 		<SCRIPT type="text/javascript" src="./fixMarkup.js"></SCRIPT>
         <style type="text/css">
             
@@ -51,7 +50,49 @@
             }
         </style>
         <SCRIPT type="text/javascript">
+            function getCurrentElement() {
+              var sel = rangy.getSelection(); 
+              if (sel.rangeCount) {
+                var node = document.createTextNode('\u202F');
+                var range = sel.getRangeAt(0);
+                range.insertNode(node);
+                $("#current").html(Parser.parseElementContentsToLocation('#texted'));
+                range.selectNode(node);
+                range.deleteContents();
+              }
+            }
+            
+        
             tagMode = false;
+            
+            AutoSuggest = function(){
+            			this.possible = [];
+            			this.history=[];
+            			this.typed = "";
+            		};
+            	AutoSuggest.constructor = AutoSuggest;
+            	AutoSuggest.prototype = {};
+            	$.extend(AutoSuggest.prototype, {
+            		setPossible:function(possArray){
+            			this.possible = possArray;
+            			this.history = [];
+
+            		},
+            		narrowPossible:function(){
+            			self = this;
+            			this.history.push(this.possible);
+            			this.possible = _.select(this.possible,function(i){if (i.substring(0,self.typed.length)==self.typed){return i;}}); 
+            			return this.possible;
+            		},
+            		backPossible: function(){
+            			this.possible = this.history.pop();
+            		},
+            		getPossible: function(){
+            			return this.possible;
+            		}
+
+            	});
+            
             suggestOpen = false;
           
         		function textPasted(){
@@ -91,6 +132,7 @@
                 ts = new TextSelector();
                 $("body").keypress(function(e){
                     $("#quack").html(e.charCode + "/" + e.keyCode);
+                    
                     if (!(tagMode)) {
                         switch (e.charCode) {
                         
@@ -152,6 +194,13 @@
                     
                 });
                 
+                $("#texted").keyup(function(e) {
+                  getCurrentElement();
+                });
+                
+                $("#texted").mouseup(function(e) {
+                  getCurrentElement();
+                });
                 
                 $("#cool").mousedown(function(e){
                   //  joy = ts.getSelectedText();
@@ -173,6 +222,8 @@
             cool
         </div>
         <div id="quack">
+        </div>
+        <div id="current">
         </div>
         <div id="texted" contenteditable="true" width=500 height=500>
             Test text
