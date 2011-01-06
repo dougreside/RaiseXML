@@ -18,7 +18,8 @@
         </SCRIPT>
         <SCRIPT type="text/javascript" src="./AutoSuggest.js">
         </SCRIPT>
-		<SCRIPT type="text/javascript" src="./fixMarkup.js"></SCRIPT>
+        <SCRIPT type="text/javascript" src="./fixMarkup.js">
+        </SCRIPT>
         <style type="text/css">
             
             .tag {
@@ -49,47 +50,53 @@
             .autoSugList.li {
                 left: 0px;
             }
+			.SelectedAutoSuggestItem{
+				background-color: cyan;
+			}
         </style>
         <SCRIPT type="text/javascript">
             tagMode = false;
-            suggestOpen = false;
-          
-        		function textPasted(){
-			// The contents of div#texted have just changed
-			// due to a paste action. Auto format.
-			curContents = $("#texted").html();
-                        //fixMarkup should only modify areas that dont correctly wrap spans around tags and change < and > to html entities
-                        curContents=fixMarkup(curContents);
-			$("#texted").html(curContents);
-		
-            }
+        
             
-            function showSuggest(list){
-            
-                listHTML = "<ul class='autoSugList'>";
-                for (var i = 0; i < list.length; i++) {
-                    listHTML = listHTML + "<li>" + list[i] + "</li>"
-                }
-                listHTML = listHTML + "</ul>";
-                var asx = $("#activeTag").offset().left;
-                var asy = $("#activeTag").offset().top;
+            function textPasted(){
+                // The contents of div#texted have just changed
+                // due to a paste action. Auto format.
+                curContents = $("#texted").html();
+                //fixMarkup should only modify areas that dont correctly wrap spans around tags and change < and > to html entities
+                curContents = fixMarkup(curContents);
+                $("#texted").html(curContents);
                 
-                lh = parseFloat($("#activeTag").css("line-height"));
-                asy = asy + lh;
-                $("#autoSuggest").show();
-                $("#autoSuggest").offset({
-                    left: asx,
-                    top: asy
-                });
-                $("#autoSuggest").html(listHTML);
-				suggestOpen = true;
             }
+            
+            
             
             $(document).ready(function(){
                 texteles = _.uniq(contextHelp.text.elements);
                 asug = new AutoSuggest();
                 ts = new TextSelector();
                 $("body").keypress(function(e){
+					if (asug.menuOpen){
+						switch (e.keyCode) {
+							case 40:
+								asug.menuDown();
+								e.preventDefault();
+							break;
+							case 38:
+								// up cursor
+								asug.menuUp();
+								e.preventDefault();
+							break;
+							case 13:
+					
+								var txt = asug.getCurrent().substring(asug.typed.length);
+								document.execCommand("insertHTML", false, txt);
+        
+								$("#activeTag").text("<"+txt);
+								e.preventDefault();
+							break;
+							
+						}
+					}
                     $("#quack").html(e.charCode + "/" + e.keyCode);
                     if (!(tagMode)) {
                         switch (e.charCode) {
@@ -103,6 +110,8 @@
                                 tagMode = true;
                                 
                                 asug.setPossible(texteles);
+                                list = asug.narrowPossible();
+                                asug.showSuggest(list,"activeTag");
                                 e.preventDefault();
                                 break;
                                 
@@ -121,25 +130,29 @@
                             mypos.collapseToEnd();
                             tagMode = false;
                             $("#activeTag").attr("id", "");
-                            $("#autoSuggest").html("");
-                            $("#autoSuggest").hide();
+                   
+                           asug.hideSuggest();
                             e.preventDefault();
                             
                         }
                         
                         else {
-                            if (e.keyCode == 8) {
-                                asug.typed = asug.typed.substring(0, asug.typed.length - 1);
-                                asug.backPossible();
-                            }
-                            else {
-                                asug.typed = asug.typed + String.fromCharCode(e.charCode);
-                                
-                                
-                            }
+							if (e.charCode > 0) {
+								if (e.keyCode == 8) {
+									asug.typed = asug.typed.substring(0, asug.typed.length - 1);
+									asug.backPossible();
+									
+								}
+								else {
+									alert("ping");
+									asug.typed = asug.typed + String.fromCharCode(e.charCode);
+									
+									
+								}
+								asug.showSuggest(asug.narrowPossible(), "activeTag");
+							}
                             
-                            list = asug.narrowPossible();
-                            showSuggest(list);
+                            
                             
                             
                             
@@ -154,9 +167,9 @@
                 
                 
                 $("#cool").mousedown(function(e){
-                  //  joy = ts.getSelectedText();
-                  //  alert(JSON.stringify(joy));
-				  textPasted();
+                    //  joy = ts.getSelectedText();
+                    //  alert(JSON.stringify(joy));
+                    textPasted();
                 });
                 
             });
@@ -181,6 +194,3 @@
         </div>
     </BODY>
 </HTML>
-
-
-
