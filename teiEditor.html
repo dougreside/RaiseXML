@@ -9,6 +9,7 @@
 	<SCRIPT type="text/javascript" src="./textSelection.js"></SCRIPT>
 	<SCRIPT type="text/javascript" src="./contextHelp.js"></SCRIPT>
 	<SCRIPT type="text/javascript" src="./underscore-min.js"></SCRIPT>
+		<SCRIPT type="text/javascript" src="./AutoSuggest.js"></SCRIPT>
 	<style type="text/css">
 		.tag{
 			color: blue;
@@ -27,37 +28,18 @@
 	</style>
 	<SCRIPT type="text/javascript">
 		tagMode=false;
-		AutoSuggest = function(){
-			this.possible = [];
-			this.history=[];
-			this.typed = "";
-		};
-	AutoSuggest.constructor = AutoSuggest;
-	AutoSuggest.prototype = {};
-	$.extend(AutoSuggest.prototype, {
-		setPossible:function(possArray){
-			this.possible = possArray;
-			this.history = [];
-
-		},
-		narrowPossible:function(){
-			self = this;
-			this.history.push(this.possible);
-			this.possible = _.select(this.possible,function(i){if (i.substring(0,self.typed.length)==self.typed){return i;}}); 
-			return this.possible;
-		},
-		backPossible: function(){
-			this.possible = this.history.pop();
-		},
-		getPossible: function(){
-			return this.possible;
+		function textPasted(){
+			// The contents of div#texted have just changed
+			// due to a paste action. Auto format.
+			curContents = $("#texted").html();
+			// Here a miracle occurs that makes curContents 
+			// properly formatted. 
+			$("#texted").html(curContents);
 		}
-		
-	});
 		
 		$(document).ready(function(){
 			texteles = _.uniq(contextHelp.text.elements);
-			
+			asug = new AutoSuggest();
 				ts = new TextSelector();
    	$("body").keypress(function(e){
 			$("#quack").html(e.charCode+"/"+e.keyCode);
@@ -71,7 +53,7 @@
 								document.execCommand("insertHTML", false, "<span class='tag'>&lt;</span>");
 								
 								tagMode = true;
-								asug = new AutoSuggest();
+								
 								asug.setPossible(texteles);
 								e.preventDefault();
 								break;
