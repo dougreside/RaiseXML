@@ -1,146 +1,179 @@
 <HTML>
-<HEAD>
-	<SCRIPT type="text/javascript" src="./jquery/js/jquery-1.4.4.min.js"></SCRIPT>
-	<SCRIPT type="text/javascript" src="./jquery/js/jquery-ui-1.8.7.custom.min.js"></SCRIPT>
-	
-		<SCRIPT type="text/javascript" src="./getPath.js"></SCRIPT>
-	<SCRIPT type="text/javascript" src="./rangy-core.js"></SCRIPT>
-	<SCRIPT type="text/javascript" src="./selectionsaverestore.js"></SCRIPT>
-	<SCRIPT type="text/javascript" src="./textSelection.js"></SCRIPT>
-	<SCRIPT type="text/javascript" src="./contextHelp.js"></SCRIPT>
-	<SCRIPT type="text/javascript" src="./underscore-min.js"></SCRIPT>
-		<SCRIPT type="text/javascript" src="./AutoSuggest.js"></SCRIPT>
-	<style type="text/css">
-		.tag{
-			color: blue;
-		}
-		.hidden{
-			display:block;
-		}
-		
-		#tree{
-			overflow: auto;
-			height: 100px;
-			width: 200px;
-			font-size: small;
-			border: thin solid red;
-		}
-	</style>
-	<SCRIPT type="text/javascript">
-		tagMode=false;
-		function textPasted(){
-			// The contents of div#texted have just changed
-			// due to a paste action. Auto format.
-			curContents = $("#texted").html();
-			// Here a miracle occurs that makes curContents 
-			// properly formatted. 
-			$("#texted").html(curContents);
-		}
-		
-		$(document).ready(function(){
-			texteles = _.uniq(contextHelp.text.elements);
-			asug = new AutoSuggest();
-				ts = new TextSelector();
-   	$("body").keypress(function(e){
-			$("#quack").html(e.charCode+"/"+e.keyCode);
-					if (!(tagMode)) {
-						switch (e.charCode) {
-						
-							case 60:
-								// <					
-								
-								
-								document.execCommand("insertHTML", false, "<span class='tag'>&lt;</span>");
-								
-								tagMode = true;
-								
-								asug.setPossible(texteles);
-								e.preventDefault();
-								break;
-					
-						}
-					}
-					else {
-						if (e.charCode == 62)
-						{
-								mypos = rangy.getSelection();
-								newPos = rangy.createRange();
-								fon = mypos.focusNode.parentNode;
-								newText = $(fon).html() + "&gt;";
-								$(fon).html(newText);
-								newPos.selectNode(fon);
-								mypos = rangy.getSelection();
-								mypos.setSingleRange(newPos);
-								mypos.collapseToEnd();
-								tagMode = false;
-								e.preventDefault();
-														
-						}
-						
-						else{
-							if (e.keyCode == 8){
-								asug.typed = asug.typed.substring(0,asug.typed.length-1);
-								asug.backPossible();
-							}
-							else{
-								asug.typed = asug.typed+String.fromCharCode(e.charCode);
-							
-								
-							}
-							showMessage(asug.typed);
-							list = asug.narrowPossible();
-							listHTML = "<ul>";
-							for (var i=0;i<list.length;i++){
-								listHTML = listHTML+"<li>"+list[i]+"</li>"
-							}
-							listHTML=listHTML+"</ul>"
-							
-							$("#tree").html(listHTML);
-						
-							
-							
-							
-								
-							
-						}
-					
-					}
+    <HEAD>
+        <SCRIPT type="text/javascript" src="./jquery/js/jquery-1.4.4.min.js">
+        </SCRIPT>
+        <SCRIPT type="text/javascript" src="./jquery/js/jquery-ui-1.8.7.custom.min.js">
+        </SCRIPT>
+        <SCRIPT type="text/javascript" src="./getPath.js">
+        </SCRIPT>
+        <SCRIPT type="text/javascript" src="./rangy-core.js">
+        </SCRIPT>
+        <SCRIPT type="text/javascript" src="./selectionsaverestore.js">
+        </SCRIPT>
+        <SCRIPT type="text/javascript" src="./textSelection.js">
+        </SCRIPT>
+        <SCRIPT type="text/javascript" src="./contextHelp.js">
+        </SCRIPT>
+        <SCRIPT type="text/javascript" src="./underscore-min.js">
+        </SCRIPT>
+        <SCRIPT type="text/javascript" src="./AutoSuggest.js">
+        </SCRIPT>
+        <style type="text/css">
+            
+            .tag {
+                color: blue;
+            }
+            
+            .hidden {
+                display: block;
+            }
+            
+            #autoSuggest {
+                overflow: auto;
+                height: 100px;
+                width: 200px;
+                font-size: small;
+                border: thin solid red;
+                display: none;
+                list-style: none;
+                padding: 3px;
+            }
+            
+            .autoSugList {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .autoSugList.li {
+                left: 0px;
+            }
+        </style>
+        <SCRIPT type="text/javascript">
+            tagMode = false;
+            suggestOpen = false;
+            function textPasted(){
+                // The contents of div#texted have just changed
+                // due to a paste action. Auto format.
+                curContents = $("#texted").html();
+                // Here a miracle occurs that makes curContents 
+                // properly formatted. 
+                $("#texted").html(curContents);
+            }
+            
+            function showSuggest(list){
+            
+                listHTML = "<ul class='autoSugList'>";
+                for (var i = 0; i < list.length; i++) {
+                    listHTML = listHTML + "<li>" + list[i] + "</li>"
+                }
+                listHTML = listHTML + "</ul>";
+                var asx = $("#activeTag").offset().left;
+                var asy = $("#activeTag").offset().top;
+                
+                lh = parseFloat($("#activeTag").css("line-height"));
+                asy = asy + lh;
+                $("#autoSuggest").show();
+                $("#autoSuggest").offset({
+                    left: asx,
+                    top: asy
+                });
+                $("#autoSuggest").html(listHTML);
+				suggestOpen = true;
+            }
+            
+            $(document).ready(function(){
+                texteles = _.uniq(contextHelp.text.elements);
+                asug = new AutoSuggest();
+                ts = new TextSelector();
+                $("body").keypress(function(e){
+                    $("#quack").html(e.charCode + "/" + e.keyCode);
+                    if (!(tagMode)) {
+                        switch (e.charCode) {
+                        
+                            case 60:
+                                // <					
+                                
+                                
+                                document.execCommand("insertHTML", false, "<span id='activeTag' class='tag'>&lt;</span>");
+                                
+                                tagMode = true;
+                                
+                                asug.setPossible(texteles);
+                                e.preventDefault();
+                                break;
+                                
+                        }
+                    }
+                    else {
+                        if (e.charCode == 62) {
+                            mypos = rangy.getSelection();
+                            newPos = rangy.createRange();
+                            fon = mypos.focusNode.parentNode;
+                            newText = $(fon).html() + "&gt;";
+                            $(fon).html(newText);
+                            newPos.selectNode(fon);
+                            mypos = rangy.getSelection();
+                            mypos.setSingleRange(newPos);
+                            mypos.collapseToEnd();
+                            tagMode = false;
+                            $("#activeTag").attr("id", "");
+                            $("#autoSuggest").html("");
+                            $("#autoSuggest").hide();
+                            e.preventDefault();
+                            
+                        }
+                        
+                        else {
+                            if (e.keyCode == 8) {
+                                asug.typed = asug.typed.substring(0, asug.typed.length - 1);
+                                asug.backPossible();
+                            }
+                            else {
+                                asug.typed = asug.typed + String.fromCharCode(e.charCode);
+                                
+                                
+                            }
+                            
+                            list = asug.narrowPossible();
+                            showSuggest(list);
+                            
+                            
+                            
+                            
+                            
+                            
+                        }
+                        
+                    }
                     
-                });	
-		
-			
-			$("#cool").mousedown(function(e){joy = ts.getSelectedText();alert(JSON.stringify(joy));});
-		
-		});
-		function showMessage(data){
-		
-			$("#Messages").html(data);
-			
-		}
-	</SCRIPT>
-<title>TEI Editor</title>
-	</HEAD>
-	<BODY>
-		<div id="cool">cool</div>
-		<div id="quack"></div>
-		<table>
-		<tr>
-			<td>
-		<div id="texted" contenteditable="true" width=500 height=500>
-			Test text
-		</div>
-		</td>
-		<td>
-		<div id="Messages">
-			
-		</div>
-		<div id="tree">
-			
-		</div></td>
-		</tr>
-		</table>
-		
-		
-	</BODY>
-	
-	</HTML>
+                });
+                
+                
+                $("#cool").mousedown(function(e){
+                    joy = ts.getSelectedText();
+                    alert(JSON.stringify(joy));
+                });
+                
+            });
+            function showMessage(data){
+            
+                $("#Messages").html(data);
+                
+            }
+        </SCRIPT>
+        <title>TEI Editor</title>
+    </HEAD>
+    <BODY>
+        <div id="cool">
+            cool
+        </div>
+        <div id="quack">
+        </div>
+        <div id="texted" contenteditable="true" width=500 height=500>
+            Test text
+        </div>
+        <div id="autoSuggest">
+        </div>
+    </BODY>
+</HTML>
