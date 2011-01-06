@@ -6,26 +6,33 @@
 package xmlEditor;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 /**
  *
  * @author jdeerin1
  */
 public class textFetcher {
+    /**Reads a text file as UTF-8 encoded text and returns a string with the contents*/
 public static String readFileAsString(String filePath)
-    throws java.io.IOException{
+    throws java.io.IOException
+        {
         StringBuffer fileData = new StringBuffer(1000);
-        BufferedReader reader = new BufferedReader(
-                new FileReader(filePath));
         char[] buf = new char[1024];
         int numRead=0;
-        while((numRead=reader.read(buf)) != -1){
+        Reader in = new InputStreamReader(new FileInputStream(filePath), "UTF-8");
+
+        while((numRead=in.read(buf)) != -1){
             String readData = String.valueOf(buf, 0, numRead);
             fileData.append(readData);
             buf = new char[1024];
         }
-        reader.close();
+        in.close();
         return fileData.toString();
     }
+
 }
