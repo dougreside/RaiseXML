@@ -20,6 +20,7 @@
         </SCRIPT>
         <SCRIPT type="text/javascript" src="./fixMarkup.js">
         </SCRIPT>
+        <script src="xmlcheck.js" type="text/javascript" charset="utf-8"></script>
         <style type="text/css">
             
             .tag {
@@ -192,6 +193,16 @@
                     
                 });
                 
+                $("#texted").keyup(function(e) {
+                  XMLCheck.parseElementContentsToCursor("#texted");
+                  $("#current").html("/ " + XMLCheck.stack.join(" / "));
+                });
+                
+                $("#texted").mouseup(function(e) {
+                  XMLCheck.parseElementContentsToCursor("#texted");
+                  $("#current").html("/ " + XMLCheck.stack.join(" / "));
+                });
+                
                 
                 $("#cool").mousedown(function(e){
                     //  joy = ts.getSelectedText();
@@ -213,6 +224,8 @@
             cool
         </div>
         <div id="quack">
+        </div>
+        <div id="current">
         </div>
         <div id="texted" contenteditable="true" width=500 height=500>
             Test text
