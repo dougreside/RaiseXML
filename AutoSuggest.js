@@ -58,9 +58,12 @@ AutoSuggest = function(){
 					
 				$(".SelectedAutoSuggestItem").removeClass("SelectedAutoSuggestItem");
 				var curLine = $(".autoSugList>li:eq("+this.curOpt+")");
-				curLine.addClass("SelectedAutoSuggestItem");
-				newScrollPos = parseFloat(curLine.position().top)+parseFloat($("#autoSuggest").scrollTop());
-				$("#autoSuggest").scrollTop(newScrollPos);
+				if (curLine.length > 0) {
+				    curLine.addClass("SelectedAutoSuggestItem");
+				    newScrollPos = parseFloat(curLine.position().top)+parseFloat($("#autoSuggest").scrollTop());
+				    $("#autoSuggest").scrollTop(newScrollPos);
+				}
+				
 			}
 		
 		},

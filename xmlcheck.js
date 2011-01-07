@@ -2,7 +2,10 @@
  *  XMLCheck is a tool for quickly doing minimal parsing/well-formedness checking
  *  on an XML document (it really just checks for proper tag nesting).  Parsing 
  *  can run just to the current cursor position and then stop. When a parse
- *  has been run, the object can report on the 
+ *  has been run, the object can report on the list of open elements, the current
+ *  element name, the position in the document that it parsed to, document well-
+ *  formedness (if it parsed to the end), and whether the position parsed to is
+ *  inside a tag.
  */
 var XMLCheck = {
   stack: [],

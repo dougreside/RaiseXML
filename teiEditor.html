@@ -72,10 +72,12 @@
             
             
             $(document).ready(function(){
-                texteles = _.uniq(contextHelp.text.elements);
+                //texteles = _.uniq(contextHelp.text.elements);
+                var texteles = ['TEI'];
                 asug = new AutoSuggest();
                 ts = new TextSelector();
                 $("body").keypress(function(e){
+                  XMLCheck.parseElementContentsToCursor("#texted");
 					if (asug.menuOpen){
 					
 						switch (e.keyCode) {
@@ -117,7 +119,7 @@
 						}
 					}
                    
-                    if (!(tagMode)) {
+                    if (true) {
                         switch (e.charCode) {
                         
                             case 60:
@@ -127,8 +129,14 @@
                                 document.execCommand("insertHTML", false, "<span id='activeTag' class='tag'>&lt;</span>");
                                 
                                 tagMode = true;
+                                if (XMLCheck.current.length == 0) {
+                                  asug.setPossible(['TEI']);
+                                } else {
+                                  if (contextHelp[XMLCheck.current]) {
+                                    asug.setPossible(contextHelp[XMLCheck.current].elements);
+                                  }
+                                }
                                 
-                                asug.setPossible(texteles);
                                 list = asug.narrowPossible();
                                 asug.showSuggest(list,"activeTag");
                                 e.preventDefault();
