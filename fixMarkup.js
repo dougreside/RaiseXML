@@ -91,7 +91,7 @@ function fixMarkupOld(text)
 /**
  *Add a <span class=tag> around every xml tag that was pasted into the editor.
  **/
-function fixMarkupNew(text)
+function fixMarkup(text)
 {
 
     var tagBeginnings=text.split( "&lt;" );
