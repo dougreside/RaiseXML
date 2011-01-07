@@ -1,28 +1,44 @@
-<HTML>
-    <HEAD>
-        <SCRIPT type="text/javascript" src="./jquery/js/jquery-1.4.4.min.js">
-        </SCRIPT>
-        <SCRIPT type="text/javascript" src="./jquery/js/jquery-ui-1.8.7.custom.min.js">
-        </SCRIPT>
-        <SCRIPT type="text/javascript" src="./getPath.js">
-        </SCRIPT>
-        <SCRIPT type="text/javascript" src="./rangy-core.js">
-        </SCRIPT>
-        <SCRIPT type="text/javascript" src="./selectionsaverestore.js">
-        </SCRIPT>
-        <SCRIPT type="text/javascript" src="./textSelection.js">
-        </SCRIPT>
-        <SCRIPT type="text/javascript" src="./contextHelp.js">
-        </SCRIPT>
-        <SCRIPT type="text/javascript" src="./underscore-min.js">
-        </SCRIPT>
-        <SCRIPT type="text/javascript" src="./AutoSuggest.js">
-        </SCRIPT>
-        <SCRIPT type="text/javascript" src="./fixMarkup.js">
-        </SCRIPT>
-		 <SCRIPT type="text/javascript" src="./xmlcheck.js">
-        </SCRIPT>
-        <style type="text/css">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+    <head>
+        <meta name="generator" content="HTML Tidy, see www.w3.org">
+<script type="text/javascript" src=
+"./jquery/js/jquery-1.4.4.min.js">
+        
+</script>
+<script type="text/javascript" src=
+"./jquery/js/jquery-ui-1.8.7.custom.min.js">
+        
+</script>
+<script type="text/javascript" src="./getPath.js">
+        
+</script>
+<script type="text/javascript" src="./rangy-core.js">
+        
+</script>
+<script type="text/javascript" src="./selectionsaverestore.js">
+        
+</script>
+<script type="text/javascript" src="./textSelection.js">
+        
+</script>
+<script type="text/javascript" src="./contextHelp.js">
+        
+</script>
+<script type="text/javascript" src="./underscore-min.js">
+        
+</script>
+<script type="text/javascript" src="./AutoSuggest.js">
+        
+</script>
+<script type="text/javascript" src="./fixMarkup.js">
+        
+</script>
+<script type="text/javascript" src="./xmlcheck.js">
+        
+</script>
+<style type="text/css">
             
             .tag {
                 color: blue;
@@ -56,8 +72,9 @@
             .SelectedAutoSuggestItem {
                 background-color: cyan;
             }
-        </style>
-        <SCRIPT type="text/javascript">
+        
+</style>
+<script type="text/javascript">
             mode = "plain";
             tagMode = false;
             typingTagName = false;
@@ -77,7 +94,7 @@
             
             $(document).ready(function(){
                 //  texteles = _.uniq(contextHelp.text.elements);
-				
+                
                 var texteles = ['TEI'];
                 asug = new AutoSuggest();
                 ts = new TextSelector();
@@ -88,13 +105,13 @@
                     
                         switch (e.keyCode) {
                             case 40:
-						
+                        
                                 asug.menuDown();
                                 e.preventDefault();
                                 break;
                             case 38:
                                 // up cursor
-							
+                            
                                 asug.menuUp();
                                 e.preventDefault();
                                 break;
@@ -132,21 +149,21 @@
                         
                             case 60:
                                 // <
-								 XMLCheck.parseElementContentsToCursor("#texted");					
-                                document.execCommand("insertHTML", false, "<span id='activeTag' class='tag'>&lt;</span>");                   
+                                 XMLCheck.parseElementContentsToCursor("#texted");                  
+                                document.execCommand("insertHTML", false, "<span id='activeTag' class='tag'>&lt;<\/span>");                   
                                  mode = "typingTagName";
-								
+                                
                                 if (XMLCheck.current.length == 0) {                                                         
                                     asug.setPossible(['TEI']);                                 
                                 }
                                 else {       
-								    var curTag = XMLCheck.current.toString();    
-									//alert(contextHelp['TEI'].elements);                
-									 //alert(curTag+" : "+contextHelp[curTag].elements);
-									 possTags = _.uniq(contextHelp[curTag].elements);
+                                    var curTag = XMLCheck.current.toString();    
+                                    //alert(contextHelp['TEI'].elements);                
+                                     //alert(curTag+" : "+contextHelp[curTag].elements);
+                                     possTags = _.uniq(contextHelp[curTag].elements);
                                     if (contextHelp[""+XMLCheck.current]) {                  
                                         asug.setPossible(possTags);
-										asug.typed="";
+                                        asug.typed="";
    
                                     }
      
@@ -168,30 +185,30 @@
                         if (mode == "typingTagName") {
                         
                             if (e.keyCode == 8) {
-								// delete
-								asug.typed = asug.typed.substring(0, asug.typed.length - 1);
-								asug.backPossible();
-							}
-							else {
-								if (e.charCode == 32) {
-									mode = "typingAttr";
-									alert(mode);
-									atts = _.uniq(contextHelp.text.attributes);
-									asug.setPossible(atts);
-									list = asug.narrowPossible();
-									asug.showSuggest(list, "activeTag");
-									
-									
-								}
-								else {
-								
-									if (e.charCode > 0) {
-										asug.typed = asug.typed + String.fromCharCode(e.charCode);
-									}
-								}
-								
-								//asug.showSuggest(asug.narrowPossible(), "activeTag");
-							}
+                                // delete
+                                asug.typed = asug.typed.substring(0, asug.typed.length - 1);
+                                asug.backPossible();
+                            }
+                            else {
+                                if (e.charCode == 32) {
+                                    mode = "typingAttr";
+                                    
+                                    atts = _.uniq(contextHelp.text.attributes);
+                                    asug.setPossible(atts);
+                                    list = asug.narrowPossible();
+                                    asug.showSuggest(list, "activeTag");
+                                    
+                                    
+                                }
+                                else {
+                                
+                                    if (e.charCode > 0) {
+                                        asug.typed = asug.typed + String.fromCharCode(e.charCode);
+                                    }
+                                }
+                                
+                                //asug.showSuggest(asug.narrowPossible(), "activeTag");
+                            }
                             
                         }
                         else 
@@ -210,7 +227,7 @@
                             if (fon.nodeType == 3) {
                                 fon = fon.parentNode;
                             }
-                            //alert(fon.innerHTML);
+
                             
                             newText = $(fon).html() + "&gt;";
                             $(fon).html(newText);
@@ -256,19 +273,50 @@
                 $("#Messages").html(data);
                 
             }
-        </SCRIPT>
+        
+</script>
+
         <title>TEI Editor</title>
-    </HEAD>
-    <BODY>
+    </head>
+
+    <body>
         <div id="cool">
             cool
         </div>
+
         <div id="quack">
         </div>
-        <div id="texted" contenteditable="true" width=500 height=500>
-            Test text
+
+        <div id="texted" contenteditable="true" width="500" height="500">
+           
+            <span class="tag">&lt;TEI
+            xmlns="http://www.tei-c.org/ns/1.0"&gt;</span><br>
+			<span class="tag">&lt;teiHeader&gt;</span><br>
+			<span class="tag">&lt;fileDesc&gt;</span> <br>
+			<span class="tag">&lt;titleStmt&gt;</span><br>
+			<span class="tag">&lt;title&gt;</span>
+			Title<span class="tag">&lt;/title&gt;</span><br>
+           <span class="tag">&lt;/titleStmt&gt;</span><br>
+             <span class="tag">&lt;publicationStmt&gt;</span><br>
+            <span class="tag">&lt;p&gt;</span>Publication
+            Information<span class="tag">&lt;/p&gt;</span><br>
+             <span class="tag">&lt;/publicationStmt&gt;</span><br>
+			  <span class="tag">&lt;sourceDesc&gt;</span> <br>
+			   <span class="tag">&lt;p&gt;</span>Information about the source<span class="tag">&lt;/p&gt;</span><br>
+            <span class="tag">&lt;/sourceDesc&gt;</span><br>
+              <span class="tag">&lt;/fileDesc&gt;</span><br>
+              <span class="tag">&lt;/teiHeader&gt;</span><br>
+              <span class="tag">&lt;text&gt;</span><br>
+              <span class="tag">&lt;body&gt;</span><br>
+              <span class="tag">&lt;p&gt;</span>So<span id="activeTag" class="tag"></span>me text here.<span class="tag">&lt;/p&gt;</span><br>
+             <span class="tag">&lt;/body&gt;</span><br>
+              <span class="tag">&lt;/text&gt;</span><br>
+             <span class="tag">&lt;/TEI&gt;</span>
+        
         </div>
+
         <div id="autoSuggest">
         </div>
-    </BODY>
-</HTML>
+    </body>
+</html>
+
