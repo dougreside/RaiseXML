@@ -27,25 +27,29 @@ AutoSuggest = function(){
 			return this.possible;
 		},
 		showSuggest: function(list,posId){
-            	
-                listHTML = "<ul class='autoSugList'>";
-                for (var i = 0; i < list.length; i++) {
-                    listHTML = listHTML + "<li>" + list[i] + "</li>"
-                }
-                listHTML = listHTML + "</ul>";
-                var asx = $("#"+posId).offset().left;
-                var asy = $("#"+posId).offset().top;
-                
-                lh = parseFloat($("#"+posId).css("line-height"));
-                asy = asy + lh;
-                $("#autoSuggest").show();
-                $("#autoSuggest").offset({
-                    left: asx,
-                    top: asy
-                });
-                $("#autoSuggest").html(listHTML);
-                this.menuOpen = true;
-				this.highlightCurrentListTag();
+            	if (list.length > 0) {
+					listHTML = "<ul class='autoSugList'>";
+					for (var i = 0; i < list.length; i++) {
+						listHTML = listHTML + "<li>" + list[i] + "</li>"
+					}
+					listHTML = listHTML + "</ul>";
+					var asx = $("#" + posId).offset().left;
+					var asy = $("#" + posId).offset().top;
+					
+					lh = parseFloat($("#" + posId).css("line-height"));
+					asy = asy + lh;
+					$("#autoSuggest").show();
+					$("#autoSuggest").offset({
+						left: asx,
+						top: asy
+					});
+					$("#autoSuggest").html(listHTML);
+					this.menuOpen = true;
+					this.highlightCurrentListTag();
+				}
+				else{
+					this.hideSuggest();
+				}
             },
 		hideSuggest: function(){
 			this.menuOpen=false;
@@ -87,7 +91,7 @@ AutoSuggest = function(){
 			this.highlightCurrentListTag();
 		},
 		getCurrent:function(){
-			var curText = $(".autoSugList>li:eq("+this.curOpt+")").text();
+			var curText = $(".autoSugList>li:eq("+this.curOpt+")").html();
 			return curText;
 		}
 		

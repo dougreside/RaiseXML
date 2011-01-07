@@ -1,9 +1,14 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-
-<html>
-    <head>
-        <meta name="generator" content="HTML Tidy, see www.w3.org">
-<script type="text/javascript" src=
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru">
+<head>
+	<title></title>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<meta name="description" content="Angles: a community-built XML editor" />
+	<meta name="keywords" content="XML, editor, open source, TEI" />
+	
+	<link rel="stylesheet" type="text/css" href="style.css" />
+	<link rel="shortcut icon" type="images/x-icon" href="favicon.ico" />
+	<script type="text/javascript" src=
 "./jquery/js/jquery-1.4.4.min.js">
         
 </script>
@@ -38,6 +43,7 @@
 <script type="text/javascript" src="./xmlcheck.js">
         
 </script>
+
 <style type="text/css">
             
             .tag {
@@ -107,7 +113,7 @@
                 ts = new TextSelector();
                 $("body").keypress(function(e){
                    
-                    $("#quack").html(e.charCode + " / " + e.keyCode);
+                  //  $("#quack").html(e.charCode + " / " + e.keyCode);
                     if (asug.menuOpen) {
                     
                         switch (e.keyCode) {
@@ -259,7 +265,7 @@
                             mypos.collapseToEnd();
                             
 							  asug.typed="";
-							alert(newText);
+							
                             tagName = newText.substring(4,newText.length-4);
 							if (tagName.indexOf(" ")>0){
 								tagName = tagName.substring(0,tagName.indexOf(" "));
@@ -292,28 +298,24 @@
             });
             function showMessage(data){
             
-                $("#Messages").html(data);
+               // $("#Messages").html(data);
                 
             }
         
 </script>
-
-        <title>TEI Editor</title>
-    </head>
-
-    <body>
-    	<div id="brandingHeader">RaiseXML TEI &quot;Angle Bracket&quot; Editor</div>
-    	<div id="menuBar">
-        <div id="cool">
-            Click here to convert text
-        </div>
-		<div id="Messages">
-		</div>
-        <div id="quack">
-        Debugging
-        </div>
-		</div>
-		<div id="contentWrapper">
+</head>
+<body>
+	<div id="wrapper">
+	<h1>Angles</h1>
+	<h2>A Community-Built XML Editor</h2>
+	<p>Edit the XML below.</p>
+	
+		<div id="editor">
+			<div id="toolbar">
+				<a href="#">File</a> | <a href="#">Edit</a> | <a href="#">Help</a>
+			</div>
+			<div id="editor-guts">
+					<div id="contentWrapper">
         <div id="texted" contenteditable="true" width="500" height="500">
            
             <span class="tag">&lt;TEI
@@ -344,6 +346,8 @@
 		</div>
         <div id="autoSuggest">
         </div>
-    </body>
+			</div>
+		</div>
+	</div>
+</body>
 </html>
-
