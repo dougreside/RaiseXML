@@ -8,7 +8,7 @@
  *
  *More to come as need arrises
  **/
-function fixMarkup(text)
+function fixMarkupOld(text)
 {
 
     var tagBeginnings=text.split( "<" );
@@ -87,4 +87,80 @@ function fixMarkup(text)
         }
     }
     return newText;
+}
+/**
+ *Add a <span class=tag> around every xml tag that was pasted into the editor.
+ **/
+function fixMarkupNew(text)
+{
+
+    var tagBeginnings=text.split( "&lt;" );
+    var inBadSection=true;
+    var newText="";
+    for(i=1;i<tagBeginnings.length;i++)
+    {
+
+        //If we are in the section with plain xml tags, begin by adding &lt; ad the beggining (the < was lost in the tokenizing) and repacing the first > with &gt;
+        if(inBadSection)
+        {
+            var tmpString=tagBeginnings[i];
+            var isClosingTag=false;
+            var isOpeningTag=false;
+            var slashPosition=tmpString.indexOf('/');
+            var closeBracketPosition=tmpString.indexOf('&gt;');
+            //if the slash occurs right before the >, it is a tag like <lb/> which opens and closes, so it needs both treatments
+            
+            if(slashPosition+1==closeBracketPosition)
+            {
+                isClosingTag=true;
+                isOpeningTag=true;
+            }
+            else
+            {
+                //if it has a slash, and didnt meet the prvious criteria, it is a closing tag.
+                if(slashPosition>=0 && slashPosition<closeBracketPosition)
+                {
+
+                    isClosingTag=true;
+                }
+                else
+                {
+                    //If it wasnt any of those, its a plain opening tag.
+                    
+                        isOpeningTag=true;
+                  
+                }
+            }
+                if(i<10)
+                {
+                    if(isOpeningTag==false && isClosingTag==false)
+                        alert(tmpString);
+                }
+                
+                if(isOpeningTag)
+                {
+                    if(isClosingTag)
+                    {
+                        tmpString=tmpString.replace('&gt;','&gt;</span>');
+                    }
+                    tmpString='<span class="tag">&lt;'+tmpString;
+                    tmpString=tmpString.replace('&gt;','&gt;</span>');
+                }
+                else
+                {
+                    if(isClosingTag)
+                    {
+                        tmpString='<span class="tag">&lt;'+tmpString;
+                        tmpString=tmpString.replace('&gt;','&gt;</span>');
+                        
+                    }
+                   
+                   
+                }
+
+            
+            newText+=tmpString;
+        }
+    }
+     return newText;
 }
